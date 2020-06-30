@@ -16,6 +16,8 @@ class IETF:
 
     def _load_cache(self):
         seen = {}
+        if not os.path.exists(self.cache_path):
+            return seen
         with open(self.cache_path) as cache:
             for line in cache.readlines():
                 rfc_id = line.strip()
