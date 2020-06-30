@@ -33,7 +33,7 @@ def fetch_contacts(client):
 
 def main():
     mailer = SendGridAPIClient(
-        api_key=os.environ.get('RFCWEEKLY_SENDGRID_API_KEY'))
+        api_key=os.environ.get('SENDGRID_API_KEY'))
     week = date.today().strftime('%B %d')
     rfcs = fetch_rfcs()
     if not rfcs:
