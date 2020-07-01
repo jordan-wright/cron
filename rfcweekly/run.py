@@ -47,7 +47,7 @@ def main():
                 to_emails=contacts)
     mail.dynamic_template_data = {'week': week, 'rfcs': rfcs}
     mail.template_id = os.environ.get('RFCWEEKLY_SENDGRID_TEMPLATE_ID')
-    mail.asm = Asm(group_id=os.environ.get('RFCWEEKLY_SENDGRID_GROUP'))
+    mail.asm = Asm(group_id=int(os.environ.get('RFCWEEKLY_SENDGRID_GROUP')))
     try:
         mailer.send(mail)
         print('{} new RFCs sent for the week of {}'.format(len(rfcs), week))
