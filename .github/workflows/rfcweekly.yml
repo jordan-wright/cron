@@ -4,7 +4,6 @@ on:
     types: [manual_trigger]
 jobs:
   send_newsletter:
-    runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -14,6 +13,7 @@ jobs:
       RFCWEEKLY_SENDGRID_GROUP: ${{ secrets.RFCWEEKLY_SENDGRID_GROUP }}
       RFCWEEKLY_SENDGRID_TEMPLATE_ID: ${{ secrets.RFCWEEKLY_SENDGRID_TEMPLATE_ID }}
       SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.8
