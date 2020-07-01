@@ -20,16 +20,15 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
-      - run: ls -alR
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r ./rfcweekly/requirements.txt
+          pip install -r rfcweekly/requirements.txt
       - run: mkdir .cache
       - name: Download cache
-        run: aws s3 cp -r s3://$AWS_S3_BUCKET/rfcweekly/ rfcweekly/.cache/
+        run: aws s3 cp s3://$AWS_S3_BUCKET/rfcweekly/ rfcweekly/.cache/
       - name: Fetch RFCs and Send Emails
         working-directory: rfcweekly
         run: python run.py
       - name: Refresh cache
-        run: aws s3 cp -r rfcweekly/.cache/* s3://$AWS_S3_BUCKET/rfcweekly/
+        run: aws s3 cp rfcweekly/.cache/* s3://$AWS_S3_BUCKET/rfcweekly/
