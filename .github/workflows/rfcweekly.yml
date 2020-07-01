@@ -25,9 +25,9 @@ jobs:
           pip install -r rfcweekly/requirements.txt
       - run: mkdir .cache
       - name: Download cache
-        run: s3 cp -r s3://$S3_BUCKET/rfcweekly/ rfcweekly/.cache/
+        run: aws s3 cp -r s3://$S3_BUCKET/rfcweekly/ rfcweekly/.cache/
       - name: Fetch RFCs and Send Emails
         working-directory: rfcweekly
         run: python run.py
       - name: Refresh cache
-        run: s3 cp -r rfcweekly/.cache s3://$S3_BUCKET/rfcweekly/
+        run: aws s3 cp -r rfcweekly/.cache/* s3://$S3_BUCKET/rfcweekly/
