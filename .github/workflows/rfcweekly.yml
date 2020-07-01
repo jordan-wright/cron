@@ -8,6 +8,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: us-east-1
+      AWS_S3_BUCKET: github-action-cache
       RFCWEEKLY_SENDGRID_FROM_ADDRESS: ${{ secrets.RFCWEEKLY_SENDGRID_FROM_ADDRESS }}
       RFCWEEKLY_SENDGRID_GROUP: ${{ secrets.RFCWEEKLY_SENDGRID_GROUP }}
       RFCWEEKLY_SENDGRID_TEMPLATE_ID: ${{ secrets.RFCWEEKLY_SENDGRID_TEMPLATE_ID }}
@@ -25,9 +26,9 @@ jobs:
           pip install -r rfcweekly/requirements.txt
       - run: mkdir .cache
       - name: Download cache
-        run: aws s3 cp -r s3://$S3_BUCKET/rfcweekly/ rfcweekly/.cache/
+        run: aws s3 cp -r s3://$AWS_S3_BUCKET/rfcweekly/ rfcweekly/.cache/
       - name: Fetch RFCs and Send Emails
         working-directory: rfcweekly
         run: python run.py
       - name: Refresh cache
-        run: aws s3 cp -r rfcweekly/.cache/* s3://$S3_BUCKET/rfcweekly/
+        run: aws s3 cp -r rfcweekly/.cache/* s3://$AWS_S3_BUCKET/rfcweekly/
