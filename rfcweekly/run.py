@@ -1,8 +1,7 @@
-import json
 import os
 
 from datetime import date
-from sources import PROVIDERS
+from sources import PROVIDERS, DRAFT_PROVIDERS
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail, Asm
 
@@ -15,6 +14,15 @@ def fetch_rfcs():
         provider = provider_cls(CACHE_DIR)
         rfcs.extend(provider.fetch())
     return rfcs
+
+
+def fetch_drafts():
+    drafts = []
+    for provider_cls in DRAFT_PROVIDERS:
+        provider = provider_cls(CACHE_DIR)
+        drafts.extend(provider.fetch())
+    return drafts
+
 
 def fetch_contacts(client):
     # For now, we're just using the /marketing/contacts endpoint which has
@@ -31,28 +39,33 @@ def fetch_contacts(client):
     # contacts = [contact['email'] for contact in response['result']]
     return [os.environ.get('RFCWEEKLY_SENDGRID_TO_ADDRESS')]
 
+
 def main():
     mailer = SendGridAPIClient(
         api_key=os.environ.get('SENDGRID_API_KEY'))
     week = date.today().strftime('%B %d')
     rfcs = fetch_rfcs()
-    if not rfcs:
+    drafts = fetch_drafts()
+    if not rfcs and not drafts:
         print('No RFCS for the week of {}'.format(week))
         return
     contacts = fetch_contacts(mailer.client)
-    # print('Sending emails to {} contacts')
-    # for recipient in contacts:
-    #     print('Sending email to {}'.format(recipient))
-    mail = Mail(from_email=os.environ.get('RFCWEEKLY_SENDGRID_FROM_ADDRESS'),
-                to_emails=contacts)
-    mail.dynamic_template_data = {'week': week, 'rfcs': rfcs}
-    mail.template_id = os.environ.get('RFCWEEKLY_SENDGRID_TEMPLATE_ID')
-    mail.asm = Asm(group_id=int(os.environ.get('RFCWEEKLY_SENDGRID_GROUP')))
-    try:
-        mailer.send(mail)
-        print('{} new RFCs sent for the week of {}'.format(len(rfcs), week))
-    except Exception as e:
-        print(e.to_dict)
+    for contact in contacts:
+        mail = Mail(from_email=os.environ.get('RFCWEEKLY_SENDGRID_FROM_ADDRESS'),
+                    to_emails=contact)
+        mail.dynamic_template_data = {
+            'week': week,
+            'rfcs': rfcs,
+            'drafts': drafts
+        }
+        mail.template_id = os.environ.get('RFCWEEKLY_SENDGRID_TEMPLATE_ID')
+        mail.asm = Asm(group_id=int(os.environ.get('RFCWEEKLY_SENDGRID_GROUP')))
+        try:
+            mailer.send(mail)
+            print('{} new RFCs sent for the week of {}'.format(
+                len(rfcs), week))
+        except Exception as e:
+            print(e.to_dict)
 
 
 if __name__ == '__main__':
