@@ -35,9 +35,8 @@ def fetch_contacts(client):
     # download the response, and gunzip it. Doable, but gross.
     #
     # ...50 contacts is fine for my purposes.
-    # response = client.marketing.contacts.get()
-    # contacts = [contact['email'] for contact in response['result']]
-    return [os.environ.get('RFCWEEKLY_SENDGRID_TO_ADDRESS')]
+    response = client.marketing.contacts.get()
+    return [contact['email'] for contact in response.to_dict['result']]
 
 
 def main():
