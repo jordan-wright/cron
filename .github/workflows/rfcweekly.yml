@@ -2,7 +2,7 @@ name: RFC Weekly Newletter
 
 on:
   schedule:
-    cron: '0 10 * * 1'
+    - cron: '0 10 * * 1'
   repository_dispatch:
     types: [manual_trigger]
 
