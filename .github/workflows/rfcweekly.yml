@@ -32,4 +32,4 @@ jobs:
         working-directory: rfcweekly
         run: python run.py
       - name: Refresh cache
-        run: aws s3 cp rfcweekly/.cache/* s3://$AWS_S3_BUCKET/rfcweekly/
+        run: aws s3 cp rfcweekly/.cache/ s3://$AWS_S3_BUCKET/rfcweekly/ --recursive
