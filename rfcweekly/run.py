@@ -39,32 +39,43 @@ def fetch_contacts(client):
     return [contact['email'] for contact in response.to_dict['result']]
 
 
-def main():
-    mailer = SendGridAPIClient(
-        api_key=os.environ.get('SENDGRID_API_KEY'))
+def send_emails(mailer, rfcs, drafts):
     week = date.today().strftime('%B %d')
-    rfcs = fetch_rfcs()
-    drafts = fetch_drafts()
-    if not rfcs and not drafts:
-        print('No RFCS for the week of {}'.format(week))
-        return
     contacts = fetch_contacts(mailer.client)
     for contact in contacts:
-        mail = Mail(from_email=os.environ.get('RFCWEEKLY_SENDGRID_FROM_ADDRESS'),
-                    to_emails=contact)
+        mail = Mail(
+            from_email=os.environ.get('RFCWEEKLY_SENDGRID_FROM_ADDRESS'),
+            to_emails=contact)
         mail.dynamic_template_data = {
             'week': week,
             'rfcs': rfcs,
             'drafts': drafts
         }
         mail.template_id = os.environ.get('RFCWEEKLY_SENDGRID_TEMPLATE_ID')
-        mail.asm = Asm(group_id=int(os.environ.get('RFCWEEKLY_SENDGRID_GROUP')))
+        mail.asm = Asm(
+            group_id=int(os.environ.get('RFCWEEKLY_SENDGRID_GROUP')))
         try:
             mailer.send(mail)
             print('{} new RFCs sent for the week of {}'.format(
                 len(rfcs), week))
         except Exception as e:
             print(e.to_dict)
+
+
+def main():
+    mailer = SendGridAPIClient(api_key=os.environ.get('SENDGRID_API_KEY'))
+    week = date.today().strftime('%B %d')
+    rfcs = fetch_rfcs()
+    drafts = fetch_drafts()
+    if not rfcs and not drafts:
+        print('No RFCS for the week of {}'.format(week))
+        return
+    if os.environ.get('DISABLE_MAIL_SENDING'):
+        print(
+            'Disabling mail sending due to DISABLE_MAIL_SENDING variable being set.'
+        )
+        return
+    send_emails(mailer, rfcs, drafts)
 
 
 if __name__ == '__main__':
