@@ -18,7 +18,6 @@ jobs:
       RFCWEEKLY_SENDGRID_GROUP: ${{ secrets.RFCWEEKLY_SENDGRID_GROUP }}
       RFCWEEKLY_SENDGRID_TEMPLATE_ID: ${{ secrets.RFCWEEKLY_SENDGRID_TEMPLATE_ID }}
       SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
-      DISABLE_MAIL_SENDING: 1
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
